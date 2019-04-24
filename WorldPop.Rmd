@@ -1,0 +1,65 @@
+---
+title: "World Population"
+author: "M. Mili"
+date: "24 avril 2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Objective
+
+Show on the world map a set of selected countries
+based on two selection Criteria
+
+1. Population size
+
+2. Area
+
+The application is running on <https://moezapps.shinyapps.io/WorldPopulation/>
+
+Source code and data are located on <https://github.com/MoezMili/WorldFig>
+
+## Data
+
+The data has been collected from Wikipedia web site
+and merged with the provided data set "Population" from googleVis package
+and pre-processed into the data frame Wrld
+
+```{r, comment="",echo = FALSE,message=FALSE}
+suppressPackageStartupMessages(library(googleVis))
+WrldArea <- read.csv("./WrldArea.csv",sep=";",dec=",")
+Wrld <- merge(WrldArea,Population[,2:3],by="Country")
+Wrld$Area <- Wrld$Area/10^3
+Wrld$Population <- Wrld$Population/10^6
+```
+```{r, comment="",echo = TRUE}
+head(Wrld)
+```
+*Population expressed in **Millions**, Area expressed in **Thousand Squared Km***
+
+## Issues
+
+As shown on the below graph, few countries have a very large population or area
+It makes it difficult to fit on a practical selection tool
+```{r, echo = FALSE, fig.align='center'}
+plot(x=Wrld$Area,y=Wrld$Population,
+     main="Population Density",
+     xlab="Area in K-Squared Km",
+     ylab="Population in Millions")
+```
+
+## Solutions
+
+- The sliders scales have been contained to exclude the countries with
+extremely large Population or Area.
+- However, we let the possibility to the user to catch those countries using a check box.
+- When the box is checked, the higher limit of the corresponding slider is inflated by a factor of 10.
+```{r, echo = FALSE,fig.width=6, fig.height=4,fig.align='center'}
+suppressPackageStartupMessages(library(jpeg))
+img <- readJPEG("./SlidersCB.jpg")
+plot(c(100, 250), c(300, 450), type = "n", xlab = "", ylab = "",axes=FALSE)
+rasterImage(img, 100, 300, 250, 450)
+```
